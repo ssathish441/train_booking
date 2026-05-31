@@ -4,8 +4,8 @@ import com.sathish.thodar.util.ConsoleInput;
 import com.sathish.thodar.util.ParseHelper;
 import com.sathish.thodar.data.repository.ThodarDB;
 import com.sathish.thodar.data.dto.enums.Role;
+import com.sathish.thodar.data.dto.entity.User;
 import com.sathish.thodar.data.dto.request.auth.LoginRequest;
-import com.sathish.thodar.data.dto.request.auth.RegisterRequest;
 import com.sathish.thodar.data.dto.response.auth.AuthResponse;
 import com.sathish.thodar.features.admin.AdminView;
 import com.sathish.thodar.features.passenger.PassengerView;
@@ -15,15 +15,14 @@ public class AuthView {
     private final ThodarDB db = ThodarDB.getInstance();
 
     public AuthView() {
-        
         if (db.getUserByEmail("admin@thodar.com") == null) {
-            RegisterRequest admin = new RegisterRequest();
+            User admin = new User();
             admin.setName("Super Admin");
             admin.setEmail("admin@thodar.com");
             admin.setPassword("Admin@123");
             admin.setMobileNo("9999999999");
-            admin.setRole(Role.ADMIN);
-            
+            admin.setRole("ADMIN");
+            admin.setWalletBalance(0.0);
             db.addUser(admin);
         }
     }
@@ -35,22 +34,28 @@ public class AuthView {
             System.out.println("2. Passenger Register");
             System.out.println("3. Admin Login");
             System.out.println("4. Exit");
-            
+            System.out.println("5. Data Management (Backup/Restore)");
+
             String choice = ConsoleInput.getString("Choice: ").trim();
 
             switch (choice) {
                 case "1":
-                    handleLogin(Role.CUSTOMER);
+                    handleLogin("CUSTOMER");
                     break;
                 case "2":
                     handleRegister();
                     break;
                 case "3":
-                    handleLogin(Role.ADMIN);
+                    handleLogin("ADMIN");
                     break;
                 case "4":
+                    System.out.println("Saving Data...");
+                    new com.sathish.thodar.features.filemanagement.FileView().saveAllData(); // Save panni thaan close aaganum!
                     System.out.println("Thank you for using Thodar Railways!");
                     System.exit(0);
+                    break;
+                case "5":
+                    new com.sathish.thodar.features.filemanagement.FileView().showFileManagementMenu();
                     break;
                 default:
                     System.out.println("Invalid option.");
@@ -76,7 +81,7 @@ public class AuthView {
             boolean hasLower = pwd.matches(".*[a-z].*");
             boolean hasNum = pwd.matches(".*\\d.*");
             boolean hasSymbol = pwd.matches(".*[^A-Za-z0-9].*");
-            
+
             if (pwd.length() >= 8 && hasUpper && hasLower && hasNum && hasSymbol) {
                 String confirmPwd = ConsoleInput.getString("Confirm Password: ");
                 if (pwd.equals(confirmPwd)) {
@@ -103,43 +108,43 @@ public class AuthView {
 
     private void handleRegister() {
         System.out.println("\n--- REGISTRATION ---");
-        RegisterRequest newUser = new RegisterRequest();
-        
+        User newUser = new User();
+
         newUser.setName(ConsoleInput.getString("Name: "));
         newUser.setEmail(getValidEmail());
         newUser.setPassword(getValidPasswordForRegistration());
         newUser.setMobileNo(getValidMobile());
-        
-        newUser.setRole(Role.CUSTOMER);
+
+        newUser.setRole("CUSTOMER");
         newUser.setWalletBalance(0.0);
-        
+
         db.addUser(newUser);
         System.out.println(" Registered Successfully! Please login and recharge your wallet to book tickets.");
     }
 
-    private void handleLogin(Role requiredRole) {
-        if (requiredRole == Role.ADMIN) {
+    private void handleLogin(String requiredRole) {
+        if (requiredRole.equals("ADMIN")) {
             System.out.println("\n--- SECURE ADMIN PORTAL ---");
         } else {
             System.out.println("\n--- PASSENGER LOGIN ---");
         }
-        
+
         LoginRequest req = new LoginRequest();
         req.setEmail(getValidEmail());
         req.setPassword(ConsoleInput.getString("Password: "));
-        
 
-        RegisterRequest userEntity = db.authenticateUser(req.getEmail(), req.getPassword());
-        
-        if (userEntity != null && userEntity.getRole() == requiredRole) {
+        // Authenticate as User Entity
+        User userEntity = db.authenticateUser(req.getEmail(), req.getPassword());
+
+        if (userEntity != null && userEntity.getRole().equals(requiredRole)) {
             AuthResponse resp = new AuthResponse();
             resp.setId(userEntity.getId());
             resp.setName(userEntity.getName());
-            resp.setRole(userEntity.getRole());
-            
+            resp.setRole(Role.valueOf(userEntity.getRole())); // Convert String back to Enum for DTO
+
             System.out.println("\nWelcome, " + resp.getName() + "!");
-            
-            if (requiredRole == Role.ADMIN) {
+
+            if (requiredRole.equals("ADMIN")) {
                 new AdminView().showAdminMenu();
             } else {
                 new PassengerView(resp, userEntity).showPassengerMenu();

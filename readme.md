@@ -1,335 +1,355 @@
-Thodar Railways 
-===============
+# Thodar Railways 🚂
 
-Overview
---------
+## Overview
 
 Thodar Railways is a comprehensive, console-based Java application designed to simulate the core backend operations of the Indian Railway ticket booking system (similar to IRCTC).
 
-The project follows a modular, feature-based Clean Architecture and uses a Singleton in-memory repository pattern for storing application data. With the latest updates, the system now integrates advanced capabilities including journey planning, file management, and automated notifications.
+The project follows a modular, feature-based Clean Architecture and uses a Singleton in-memory repository pattern for storing application data. With the latest updates, the system focuses strictly on high-performance core railway operations.
 
 The application supports:
 
-*   User onboarding and role-based access (Admin / Passenger)
-    
-*   Advanced Journey Planning and Route Management
-    
-*   Dynamic train routing and automated pair-train generation
-    
-*   Quota-based ticket booking (GNWL, PQWL, TQWL)
-    
-*   Real-time waitlist and RAC recalculations
-    
-*   Integrated financial wallet and robust transaction tracking
-    
-*   Support helpdesk, automated notifications, and revenue analytics
-    
-*   File management for data exports and logs
-    
+* User onboarding and role-based access (Admin / Passenger)
+* 60-Days Advance Reservation Period (ARP) bulk scheduling
+* Dynamic train routing and automated paired-train generation
+* Quota-based ticket booking (GNWL, PQWL, TQWL)
+* Real-time waitlist and RAC auto-upgrades upon cancellations
+* Integrated financial wallet and robust transaction tracking
+* Support helpdesk and daily revenue analytics
 
-📊 Project Information
-----------------------
+---
 
-**PropertyValue**Project NameThodar RailwaysLanguageJava (JDK 8+)Architecture StyleFeature-based MVC / Clean ArchitectureData StorageIn-memory repository (Singleton)Entry PointMain.javaPackage Rootcom.sathish.thodarVersion5.0.0
+# Project Information
 
-🏛️ High-Level Architecture
----------------------------
+* **Project Name:** Thodar Railways
+* **Language:** Java (JDK 8+)
+* **Architecture Style:** Feature-Based MVC / Clean Architecture
+* **Data Storage:** In-Memory Repository (Singleton Pattern)
+* **Entry Point:** Main.java
+* **Package Root:** com.sathish.thodar
+* **Version:** 5.0.0
 
-The project is structured using a decoupled MVC-inspired Clean Architecture, separating Data, Business Logic, and UI/Presentation.
+---
 
-### 1\. View / Feature Layer (features/)
+# High-Level Architecture
+
+The project is structured using a decoupled Clean Architecture, separating Data, Business Logic, and UI/Presentation.
+
+## 1. View / Feature Layer (`features/`)
 
 Handles user interactions, console I/O, and feature-specific workflows.
 
-*   Examples: AuthView, AdminView, PassengerView, RouteView, NotificationView
-    
+**Examples:**
 
-### 2\. Service Layer (service/)
+* AuthView
+* AdminView
+* PassengerView
 
-Handles core mathematical calculations and business logic independently of the UI.
+## 2. Core Business Logic Layer (`features/core/`)
 
-*   Examples: TrainService (Waitlist logic, quota distribution, capacity calculation)
-    
+Acts as the brain of the application, handling complex mathematical calculations independently of the UI.
 
-### 3\. DTO Layer (data/dto/)
+**Examples:**
 
-Manages structural entities and data transfer securely between layers.
+* TrainService (Waitlist Logic, Quota Distribution, Capacity Calculation)
 
-*   **enums:** TicketClass, TransactionType, TicketQuota, etc.
-    
-*   **request:** Payloads for incoming actions (e.g., BookingRequest, TrainSetupRequest).
-    
-*   **response:** Formatted outputs (e.g., TicketSummaryResponse, LiveStatusResponse).
-    
+## 3. DTO Layer (`data/dto/`)
 
-### 4\. Repository Layer (data/repository/)
+Manages structural entities and transfers data securely between layers to prevent tight coupling.
+
+### Enums
+
+* TicketClass
+* TransactionType
+* TicketQuota
+* Role
+* ScheduleStatus
+* TicketStatus
+
+### Requests
+
+* BookingRequest
+* TrainSetupRequest
+* ScheduleRequest
+* LoginRequest
+* RegisterRequest
+
+### Responses
+
+* PassengerListResponse
+* TicketSummaryResponse
+* AuthResponse
+* LiveStatusResponse
+* Transaction
+
+## 4. Repository Layer (`data/repository/`)
 
 Centralized in-memory persistence using the Singleton pattern.
 
-*   Example: ThodarDB
-    
+**Examples:**
 
-Project Structure
------------------
+* ThodarDB
 
-\## 📂 Project Structure
+---
 
-\`\`\`text
+# Project Structure
 
+```text
 src/
+└── com/sathish/thodar/
+    ├── Main.java
+    ├── data/
+    │   ├── dto/
+    │   │   ├── enums/
+    │   │   │   ├── Role.java
+    │   │   │   ├── ScheduleStatus.java
+    │   │   │   ├── TicketClass.java
+    │   │   │   ├── TicketQuota.java
+    │   │   │   ├── TicketStatus.java
+    │   │   │   └── TransactionType.java
+    │   │   ├── request/
+    │   │   │   ├── admin/
+    │   │   │   │   ├── ScheduleRequest.java
+    │   │   │   │   └── TrainSetupRequest.java
+    │   │   │   ├── auth/
+    │   │   │   │   ├── LoginRequest.java
+    │   │   │   │   └── RegisterRequest.java
+    │   │   │   └── passenger/
+    │   │   │       └── BookingRequest.java
+    │   │   └── response/
+    │   │       ├── admin/
+    │   │       │   └── PassengerListResponse.java
+    │   │       ├── auth/
+    │   │       │   └── AuthResponse.java
+    │   │       └── passenger/
+    │   │           ├── LiveStatusResponse.java
+    │   │           ├── TicketSummaryResponse.java
+    │   │           └── Transaction.java
+    │   └── repository/
+    │       └── ThodarDB.java
+    ├── features/
+    │   ├── admin/
+    │   │   └── AdminView.java
+    │   ├── auth/
+    │   │   └── AuthView.java
+    │   ├── core/                  <-- Core Business Logic
+    │   │   └── TrainService.java
+    │   ├── passenger/
+    │   │   └── PassengerView.java
+    │   ├── reporting/
+    │   │   ├── ReportModel.java
+    │   │   └── ReportView.java
+    │   └── support/
+    │       ├── SupportModel.java
+    │       └── SupportView.java
+    └── util/
+        ├── ConsoleInput.java
+        └── ParseHelper.java
+```
 
-└── com/
+---
 
-└── sathish/
+# Core Modules & Features
 
-└── thodar/
+## 1. Authentication Module
 
-├── Main.java
+### Sign Up
 
-│
+Passengers create accounts and initialize zero-balance financial wallets.
 
-├── data/
+### Sign In
 
-│ ├── dto/
+Secure login routing users to Admin or Passenger dashboards.
 
-│ │ ├── enums/
+---
 
-│ │ │ ├── Role.java
+## 2. Admin & Route Management
 
-│ │ │ ├── ScheduleStatus.java
+### Train Setup & Scheduling
 
-│ │ │ ├── TicketClass.java
+Configure coach compositions (1A, 2A, 3A, SL), map routes, and schedule dates dynamically.
 
-│ │ │ ├── TicketQuota.java
+### Auto-Pairing
 
-│ │ │ ├── TicketStatus.java
+Intelligently auto-generates return trains with reversed routes.
 
-│ │ │ ├── TransactionStatus.java
+### Passenger Charts
 
-│ │ │ └── TransactionType.java
+View detailed physical seating charts segmented by classes.
 
-│ │ │
+---
 
-│ │ ├── request/
+## 3. Booking & Service Engine (The Core)
 
-│ │ │ ├── admin/
+### Quota Allocation
 
-│ │ │ │ ├── ScheduleRequest.java
+#### GNWL (General Waiting List)
 
-│ │ │ │ └── TrainSetupRequest.java
+Allocated to end-to-end passengers.
 
-│ │ │ ├── auth/
+#### PQWL (Pooled Waiting List)
 
-│ │ │ │ ├── LoginRequest.java
+Allocated to intermediate stations (~20% capacity).
 
-│ │ │ │ └── RegisterRequest.java
+#### TQWL (Tatkal Waiting List)
 
-│ │ │ └── passenger/
+Strict 24-hour window, capped at ~30% capacity.
 
-│ │ │ └── BookingRequest.java
+### Waitlist Shift Algorithm
 
-│ │ │
+Auto-upgrades RAC/WL passengers based on priority when confirmed tickets are cancelled.
 
-│ │ └── response/
+### Group Seating Optimization
 
-│ │ ├── admin/
+Prevents PNR fragmentation by attempting to keep passengers in the same physical coach.
 
-│ │ │ └── PassengerListResponse.java
+---
 
-│ │ ├── auth/
+## 4. Passenger Module
 
-│ │ │ └── AuthResponse.java
+### Search & Book
 
-│ │ └── passenger/
+Smart train discovery by Date and Quota.
 
-│ │ ├── LiveStatusResponse.java
+Integrated simulated payment gateway offering:
 
-│ │ ├── TicketSummaryResponse.java
+* Wallet
+* UPI
+* Card
 
-│ │ └── Transaction.java
+### Cancellations
 
-│ │
+Processes immediate cancellations with automated 80% wallet refunds and dynamic waitlist adjustments.
 
-│ └── repository/
+---
 
-│ └── ThodarDB.java
+## 5. Reporting & Support
 
-│
+### Analytics
 
-├── features/
+Generate daily revenue tracking and booking trend reports.
 
-│ ├── admin/
+### Helpdesk
 
-│ │ └── AdminView.java
+Ticketing system for passengers to raise issues and admins to resolve them.
 
-│ ├── auth/
+### System Simulation
 
-│ │ └── AuthView.java
+Admin tools to inject dummy traffic and simulate bulk cancellations for testing waitlist algorithms.
 
-│ ├── filemanagement/
+---
 
-│ │ ├── FileModel.java
+# Data Dictionary
 
-│ │ └── FileView.java
+## Key Entities
 
-│ ├── journeyplanning/
+### TrainSetupRequest
 
-│ │ ├── RouteModel.java
+Defines:
 
-│ │ └── RouteView.java
+* Train Number
+* Train Name
+* Path Sequence
+* Coach Multipliers
 
-│ ├── notification/
+### BookingRequest
 
-│ │ ├── NotificationModel.java
+Contains:
 
-│ │ └── NotificationView.java
+* PNR
+* User Mapping
+* Schedule Mapping
+* Passenger Lists
+* Quota Parameters
 
-│ ├── passenger/
+### Transaction
 
-│ │ └── PassengerView.java
+Ledger entry detailing:
 
-│ ├── reporting/
+* TxnID
+* Amount
+* Transaction Type
+* Transaction Status
 
-│ │ ├── ReportModel.java
+---
 
-│ │ └── ReportView.java
+## Key Enums
 
-│ └── support/
+### TicketClass
 
-│ ├── SupportModel.java
+* SL
+* AC_3A
+* AC_2A
+* AC_1A
 
-│ └── SupportView.java
+### TicketQuota
 
-│
+* GENERAL
+* TATKAL
 
-├── service/
+### TransactionType
 
-│ └── TrainService.java
+* CREDIT
+* DEBIT
 
-│
+### TicketStatus
 
-└── util/
+* CNF
+* RAC
+* WL
+* CAN
 
-├── ConsoleInput.java
+---
 
-└── ParseHelper.java
+# How to Run the Project
 
-⚙️ Core Modules & Features
---------------------------
+## Requirements
 
-### 1\. Authentication Module
+* Java JDK 8 or Higher
+* Standard Java IDE (IntelliJ IDEA, Eclipse) or Command Line
 
-*   **Sign Up:** Passengers create accounts and initialize zero-balance financial wallets.
-    
-*   **Sign In:** Secure login routing users to Admin or Passenger dashboards.
-    
+## Execution Steps
 
-### 2\. Admin Module
+```bash
+git clone https://github.com/ssathish441/thodar-train-booking.git
 
-*   **Train Setup & Scheduling:** Configure coach compositions (1A, 2A, 3A, SL), map routes, and schedule dates.
-    
-*   **Passenger Charts:** View detailed physical seating charts segmented by classes.
-    
+cd thodar-train-booking/src
 
-### 3\. Journey Planning Module
+javac com/sathish/thodar/Main.java
 
-*   **Smart Routing:** Define source and destination logic from master lines.
-    
-*   **Auto-Pairing:** Intelligently auto-generates return trains with reversed routes (Odd/Even numbering mapping).
-    
+java com.sathish.thodar.Main
+```
 
-### 4\. Booking & Service Engine (The Core)
+## Default Credentials
 
-*   **Quota Allocation:** \* **GNWL (General):** Allocated to the first 3 stations.
-    
-    *   **PQWL (Pooled):** Allocated to intermediate stations (20% capacity).
-        
-    *   **TQWL (Tatkal):** Strict 24-hour window, exactly 12 seats per coach.
-        
-*   **Waitlist Shift Algorithm:** Auto-upgrades RAC/WL passengers based on priority when confirmed tickets are cancelled.
-    
-*   **Group Seating Optimization:** Prevents PNR fragmentation by attempting to keep passengers in the same physical coach.
-    
+### Admin Role
 
-### 5\. Passenger Module
+```text
+Email    : admin@thodar.com
+Password : Admin@123
+```
 
-*   **Search & Book:** Smart train discovery by Date and Quota. Integrated simulated payment gateway offering Wallet, UPI, or Card options.
-    
-*   **Cancellations:** Processes immediate cancellations with automated 80% wallet refunds and dynamic waitlist adjustments.
-    
+### Passenger Role
 
-### 6\. Notification & File Management
+Create a new user via the **Passenger Register** menu option to generate a fresh wallet.
 
-*   **Alerts:** Dispatch booking confirmations, payment success, and waitlist upgrade notifications.
-    
-*   **File Exports:** Export ticket summaries, passenger charts, and application logs seamlessly.
-    
+---
 
-### 7\. Reporting & Support
+# Future Scope
 
-*   **Analytics:** Generate daily revenue tracking and booking trend reports.
-    
-*   **Helpdesk:** Ticketing system for passengers to raise issues and admins to resolve them.
-    
+## Database Integration
 
-📖 Data Dictionary
-------------------
+Implementation of a persistent SQL/RDBMS layer via JDBC to replace in-memory structures.
 
-### Key Entities
+## REST APIs
 
-*   TrainSetupRequest: Defines train number, name, path sequence, and coach multipliers.
-    
-*   BookingRequest: Contains PNR, user mapping, schedule mapping, passenger lists, and quota parameters.
-    
-*   Transaction: Ledger entry detailing TxnID, amounts, types (TransactionType), and statuses (TransactionStatus).
-    
+Spring Boot migration for RESTful API exposure and microservices architecture.
 
-### Key Enums
+## Concurrency
 
-*   TicketClass: SL, AC\_3A, AC\_2A, AC\_1A
-    
-*   TicketQuota: GENERAL, TATKAL
-    
-*   TransactionType: CREDIT, DEBIT
-    
-*   TicketStatus: CNF, RAC, WL, CAN
-    
+Multithreading implementation (e.g., ReentrantLocks) for handling high-volume Tatkal traffic concurrency.
 
-🚀 How to Run the Project
--------------------------
+## Frontend
 
-### Requirements
+Integration with React.js or Angular for a seamless Web UI.
 
-*   Java JDK 8 or higher
-    
-*   Standard Java IDE (IntelliJ IDEA, Eclipse) or Command Line
-    
 
-### Execution Steps
-
-1.  git clone https://github.com/yourusername/thodar-railways.git
-    
-2.  cd thodar-railways/src
-    
-3.  javac com/sathish/thodar/Main.java
-    
-4.  java com.sathish.thodar.Main
-    
-
-### Default Credentials
-
-*   **Admin Role:** Email: admin@thodar.com | Password: admin123
-    
-*   **Passenger Role:** Create a new user via the "Passenger Register" menu option to generate a fresh wallet.
-    
-
-🔮 Future Scope
----------------
-
-*   **Database Integration:** Implementation of persistent DB (MySQL/PostgreSQL) via JDBC.
-    
-*   **REST APIs:** Spring Boot migration for RESTful API exposure and microservices.
-    
-*   **Concurrency:** Multithreading implementation (e.g., ReentrantLocks) for handling high-volume Tatkal traffic concurrency.
-    
-*   **Frontend:** Integration with React.js or Angular for a seamless Web UI.

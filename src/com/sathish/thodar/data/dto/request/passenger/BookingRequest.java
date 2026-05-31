@@ -5,8 +5,8 @@ import com.sathish.thodar.data.dto.enums.TicketStatus;
 import com.sathish.thodar.data.dto.enums.TicketQuota; 
 import java.util.ArrayList;
 import java.util.List;
-
-public class BookingRequest {
+import java.io.Serializable;
+public class BookingRequest implements Serializable {
 
     private Long id;
     private String pnrNumber; 
@@ -22,9 +22,12 @@ public class BookingRequest {
     private Integer passengerCount;
     private Double totalFare;
     private TicketStatus status;
+    private Long passengerId;
+    private String seatNumber;
+    private Long bookingTime;
     
  
-    public static class PassengerDetail {
+    public static class PassengerDetail implements Serializable {
         public String name;
         public int age;
         public String gender;
@@ -123,4 +126,13 @@ public class BookingRequest {
     public void addPassenger(PassengerDetail detail) { 
         this.passengers.add(detail); 
     }
+    public Long getPassengerId() { return passengerId; }
+
+    public void setPassengerId(Long passengerId) { this.passengerId = passengerId; }
+
+    public String getSeatNumber() { return seatNumber; }
+    public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
+
+    public Long getBookingTime() { return bookingTime; }
+    public void setBookingTime(Long bookingTime) { this.bookingTime = bookingTime; }
 }

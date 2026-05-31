@@ -3,8 +3,8 @@ package com.sathish.thodar.data.dto.request.admin;
 import com.sathish.thodar.data.dto.enums.ScheduleStatus;
 import java.util.HashMap;
 import java.util.Map;
-
-public class ScheduleRequest {
+import java.io.Serializable;
+public class ScheduleRequest implements Serializable{
     private static long idCounter = 1;
     private Long id;
     private Long trainId;

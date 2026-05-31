@@ -1,27 +1,48 @@
 package com.sathish.thodar.features.filemanagement;
 
-import java.lang.String;
-import java.lang.Long;
+public class FileModel {
+    private String backupDirectory;
+    private String trainsFile;
+    private String schedulesFile;
+    private String ticketsFile;
 
-class FileModel {
-    private String fileName;
-    private String filePath;
-    private Long fileSize;
-
-    public FileModel() {}
-
-    public FileModel(String fileName, String filePath, Long fileSize) {
-        this.fileName = fileName;
-        this.filePath = filePath;
-        this.fileSize = fileSize;
+    public FileModel() {
+        this.backupDirectory = "thodar_data/";
+        this.trainsFile = "trains.dat";
+        this.schedulesFile = "schedules.dat";
+        this.ticketsFile = "tickets.dat";
     }
 
-    public String getFileName() { return fileName; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
 
-    public String getFilePath() { return filePath; }
-    public void setFilePath(String filePath) { this.filePath = filePath; }
+    public String getBackupDirectory() {
+        return backupDirectory;
+    }
 
-    public Long getFileSize() { return fileSize; }
-    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
+    public void setBackupDirectory(String backupDirectory) {
+        this.backupDirectory = backupDirectory;
+    }
+
+    public String getTrainsFile() {
+        return trainsFile;
+    }
+
+    public void setTrainsFile(String trainsFile) {
+        this.trainsFile = trainsFile;
+    }
+
+    public String getSchedulesFile() {
+        return schedulesFile;
+    }
+
+    public void setSchedulesFile(String schedulesFile) {
+        this.schedulesFile = schedulesFile;
+    }
+
+    public String getTicketsFile() {
+        return ticketsFile;
+    }
+
+    public void setTicketsFile(String ticketsFile) {
+        this.ticketsFile = ticketsFile;
+    }
 }

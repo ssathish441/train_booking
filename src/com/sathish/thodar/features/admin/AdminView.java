@@ -80,8 +80,23 @@ public class AdminView {
     }
 
     private void handleAddTrain() {
-        System.out.println("\n--- 🚆 ADD NEW TRAIN ---");
+        System.out.println("\n--- ADD NEW TRAIN ---");
         String trainNo = ConsoleInput.getString("Enter 5-digit Train Number (e.g., 12631): ");
+        boolean isDuplicate = false;
+        if (db.getAllTrains() != null) {
+            for (TrainSetupRequest existingTrain : db.getAllTrains()) {
+                if (existingTrain.getTrainNumber().equalsIgnoreCase(trainNo)) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+        }
+
+
+        if (isDuplicate) {
+            System.out.println(" Error: A train with number '" + trainNo + "' already exists in the system!");
+            return;
+        }
         String trainName = ConsoleInput.getString("Enter Train Name (e.g., Nellai Express): ");
 
         // STEP 1: SELECT BASE ROUTE
@@ -120,7 +135,6 @@ public class AdminView {
             int extChoice = ConsoleInput.getInt("Choice: ");
 
             if (extChoice > 1 && extChoice <= 6) {
-                // Overlap aagura 'MDU/Madurai' ah oru thadava remove pandrom
                 masterRoute.remove(masterRoute.size() - 1);
 
                 if (extChoice == 2) masterRoute.addAll(StationMaster.SR_EXT_TIRUNELVELI);
@@ -157,7 +171,7 @@ public class AdminView {
                 .map(station -> station.getStationCode() + "/" + station.getStationName())
                 .collect(Collectors.toList());
 
-        System.out.println("\n✅ Route Generated: " + String.join(" -> ", finalRouteStrings));
+        System.out.println("\n Route Generated: " + String.join(" -> ", finalRouteStrings));
 
         // STEP 4: COACH SETUP
         System.out.println("\n--- STEP 4: COACH SETUP ---");
@@ -168,7 +182,7 @@ public class AdminView {
 
         createAndSaveTrain(trainNo, trainName, finalRouteStrings, sl, ac3, ac2, ac1);
 
-        // Auto-generate Return Train Logic
+        // Auto-generate Return Train
         try {
             int num = Integer.parseInt(trainNo);
             String pairNum = (num % 2 == 0) ? String.valueOf(num - 1) : String.valueOf(num + 1);

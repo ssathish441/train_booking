@@ -1,27 +1,56 @@
-//package com.sathish.thodar.features.notification;
-//
-//import java.lang.String;
-//import java.lang.Long;
-//
-//class NotificationModel {
-//    private Long userId;
-//    private String message;
-//    private Long timestampEpoch;
-//
-//    public NotificationModel() {}
-//
-//    public NotificationModel(Long userId, String message, Long timestampEpoch) {
-//        this.userId = userId;
-//        this.message = message;
-//        this.timestampEpoch = timestampEpoch;
-//    }
-//
-//    public Long getUserId() { return userId; }
-//    public void setUserId(Long userId) { this.userId = userId; }
-//
-//    public String getMessage() { return message; }
-//    public void setMessage(String message) { this.message = message; }
-//
-//    public Long getTimestampEpoch() { return timestampEpoch; }
-//    public void setTimestampEpoch(Long timestampEpoch) { this.timestampEpoch = timestampEpoch; }
-//}
+package com.sathish.thodar.features.notification;
+
+// 'default' package-private access
+class NotificationModel {
+    private String receiverId; // PNR or Mobile Number
+    private String headerTitle;
+    private String messageBody;
+    private String notificationType; // e.g., "SMS", "EMAIL", "SYSTEM_ALERT"
+    private long timestampEpoch;
+
+    public NotificationModel() {
+        this.timestampEpoch = System.currentTimeMillis();
+    }
+
+
+
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public String getHeaderTitle() {
+        return headerTitle;
+    }
+
+    public void setHeaderTitle(String headerTitle) {
+        this.headerTitle = headerTitle;
+    }
+
+    public String getMessageBody() {
+        return messageBody;
+    }
+
+    public void setMessageBody(String messageBody) {
+        this.messageBody = messageBody;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    public void setNotificationType(String notificationType) {
+        this.notificationType = notificationType;
+    }
+
+    public long getTimestampEpoch() {
+        return timestampEpoch;
+    }
+
+    public void setTimestampEpoch(long timestampEpoch) {
+        this.timestampEpoch = timestampEpoch;
+    }
+}
