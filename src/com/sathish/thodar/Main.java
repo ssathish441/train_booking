@@ -8,9 +8,10 @@ public class Main {
 
 
     public static void main(String[] args) {
+        new com.sathish.thodar.features.filemanagement.FileView().autoLoadOnStartup();
+
         System.out.println("       Welcome to Thodar      ");
         System.out.println("=========================================");
-        
         new AuthView().showLandingMenu();
     }
 }

@@ -2,8 +2,8 @@ package com.sathish.thodar.data.dto.request.admin;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class TrainSetupRequest {
+import java.io.Serializable;
+public class TrainSetupRequest implements Serializable {
 
     private Long id; 
     private String trainNumber;

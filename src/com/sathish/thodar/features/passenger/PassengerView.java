@@ -8,15 +8,16 @@ import com.sathish.thodar.data.dto.enums.TicketQuota;
 import com.sathish.thodar.data.dto.enums.TicketStatus;
 import com.sathish.thodar.data.dto.request.admin.TrainSetupRequest;
 import com.sathish.thodar.data.dto.request.admin.ScheduleRequest;
-import com.sathish.thodar.data.dto.request.auth.RegisterRequest;
 import com.sathish.thodar.data.dto.request.passenger.BookingRequest;
 import com.sathish.thodar.data.dto.response.auth.AuthResponse;
 import com.sathish.thodar.data.dto.response.passenger.LiveStatusResponse;
 import com.sathish.thodar.data.dto.response.passenger.TicketSummaryResponse;
 import com.sathish.thodar.data.dto.response.passenger.Transaction;
-
 import com.sathish.thodar.features.support.SupportView;
 import com.sathish.thodar.features.core.TrainService;
+import com.sathish.thodar.data.dto.entity.User;
+import com.sathish.thodar.features.notification.NotificationView;
+import com.sathish.thodar.features.filemanagement.FileView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,13 @@ import java.util.Random;
 public class PassengerView {
 
     private final ThodarDB db = ThodarDB.getInstance();
-    private final AuthResponse loggedInUser;
-    private final RegisterRequest loggedInUserEntity;
     private final SupportView supportView = new SupportView();
     private final Random random = new Random();
 
-    public PassengerView(AuthResponse loggedInUser, RegisterRequest loggedInUserEntity) {
+    private final AuthResponse loggedInUser;
+    private final User loggedInUserEntity;
+
+    public PassengerView(AuthResponse loggedInUser, User loggedInUserEntity) {
         this.loggedInUser = loggedInUser;
         this.loggedInUserEntity = loggedInUserEntity;
     }
@@ -48,7 +50,9 @@ public class PassengerView {
             System.out.println("4. View My Tickets");
             System.out.println("5. Support Helpdesk");
             System.out.println("6. Recharge Wallet");
-            System.out.println("7. Logout");
+            System.out.println("7. Journey Planner (Search Route)");
+            System.out.println("8. Logout");
+
 
             String choice = ConsoleInput.getString("Choice: ").trim();
 
@@ -71,7 +75,12 @@ public class PassengerView {
                 case "6":
                     handleRechargeWallet();
                     break;
+
                 case "7":
+                    new com.sathish.thodar.features.journeyplanning.RouteView().showSearchScreen();
+                    break;
+
+                case "8":
                     System.out.println("Passenger logged out.");
                     return;
                 default:
@@ -96,6 +105,12 @@ public class PassengerView {
         System.out.println("\n--- SEARCH TRAINS ---");
         String fromIn = ConsoleInput.getString("From Station (Code/Name): ").trim();
         String toIn = ConsoleInput.getString("To Station (Code/Name): ").trim();
+
+        if (fromIn.equalsIgnoreCase(toIn)) {
+            System.out.println("Error: Source and Destination stations cannot be the same!");
+            return;
+        }
+
         String dateIn = ConsoleInput.getString("Journey Date (dd-MM-yyyy): ").trim();
 
         boolean routeFound = false;
@@ -140,6 +155,8 @@ public class PassengerView {
         TicketQuota quota = (ConsoleInput.getInt("Choice: ") == 2) ? TicketQuota.TATKAL : TicketQuota.GENERAL;
 
         List<LiveStatusResponse> results = new ArrayList<>();
+        // 👉 Validation List for Smart Selection
+        List<Long> validScheduleIds = new ArrayList<>();
 
         for (int i = 0; i < availableSchedules.size(); i++) {
             ScheduleRequest s = availableSchedules.get(i);
@@ -152,6 +169,9 @@ public class PassengerView {
                     continue;
                 }
             }
+
+
+            validScheduleIds.add(s.getId());
 
             List<String> r = t.getRouteStations();
             int fIdx = -1, tIdx = -1;
@@ -226,7 +246,27 @@ public class PassengerView {
             return;
         }
 
-        Long sId = ConsoleInput.getLong("\nEnter Schedule ID to Book: ");
+
+        Long sId = 0L;
+        if (validScheduleIds.isEmpty()) {
+            System.out.println(" Error: Valid schedules could not be mapped.");
+            return;
+        } else if (validScheduleIds.size() == 1) {
+            sId = validScheduleIds.get(0);
+            System.out.println("\n Automatically selected Schedule ID: [" + sId + "]");
+        } else {
+            while (true) {
+                sId = ConsoleInput.getLong("\nEnter Schedule ID to Book (0 to cancel): ");
+                if (sId == 0) return;
+
+                if (validScheduleIds.contains(sId)) {
+                    break;
+                } else {
+                    System.out.println("Invalid Schedule ID! Please select a valid ID from the printed list above.");
+                }
+            }
+        }
+
         int c = ConsoleInput.getInt("Select Class (1:1A, 2:2A, 3:3A, 4:SL): ");
         TicketClass tClass = (c == 1) ? TicketClass.AC_1A
                 : (c == 2) ? TicketClass.AC_2A : (c == 3) ? TicketClass.AC_3A : TicketClass.SL;
@@ -336,6 +376,21 @@ public class PassengerView {
                 System.out.println("Remaining Wallet Balance: Rs. " + loggedInUserEntity.getWalletBalance());
             }
 
+
+            try {
+                NotificationView notifier = new NotificationView();
+                notifier.sendDetailedBookingEmail(loggedInUserEntity.getEmail(), b);
+            } catch (Throwable e) {
+                System.out.println(" Email skipped!");
+                e.printStackTrace();
+            }
+
+
+            try {
+                FileView fileManagement = new FileView();
+                fileManagement.saveAllData();
+            } catch (Exception e) {}
+
             printTicket(db.getTicketByPnr(b.getPnrNumber()));
         } else {
             System.out.println("\n[ERROR] Incorrect amount entered. Booking Cancelled!");
@@ -388,6 +443,11 @@ public class PassengerView {
                 db.addTransaction(
                         new Transaction(pnr, loggedInUser.getId(), refund, "CREDIT", "Ticket Refund to " + payMode));
                 TrainService.recalculateWaitlist(t.getScheduleId(), t.getTicketClass());
+
+                try {
+                    com.sathish.thodar.features.filemanagement.FileView fileManagement = new com.sathish.thodar.features.filemanagement.FileView();
+                    fileManagement.saveAllData();
+                } catch (Exception e) {}
             }
         } else {
             System.out.println("Invalid PNR or Ticket already cancelled.");
@@ -476,26 +536,22 @@ public class PassengerView {
             res.passengers.add(pr);
         }
 
-        System.out.println(
-                "\n==================================================================================================");
+        System.out.println("\n==================================================================================================");
         System.out.println("PNR: " + res.pnrNumber + " | Train: " + res.trainDetails + " | Quota: " + t.getQuota());
         System.out.println("Route: " + res.routeDetails + " | Date: " + res.journeyDate);
         System.out.println("Class: " + res.ticketClass + " | Ticket Status: " + res.mainStatus);
-        System.out.println(
-                "--------------------------------------------------------------------------------------------------");
-        System.out.println(String.format("%-15s | %-3s | %-6s | %-22s | %-22s", "Name", "Age", "Gender",
-                "Booking Status", "Current Status"));
-        System.out.println(
-                "--------------------------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------------------");
+        System.out.println(String.format("%-15s | %-3s | %-6s | %-22s | %-22s", "Name", "Age", "Gender", "Booking Status", "Current Status"));
+        System.out.println("--------------------------------------------------------------------------------------------------");
         for (TicketSummaryResponse.PassengerResponse pr : res.passengers) {
             System.out.println(String.format("%-15s | %-3d | %-6s | %-22s | %-22s", pr.name, pr.age, pr.gender,
                     pr.bookingStatusInfo, pr.currentStatusInfo));
         }
-        System.out.println(
-                "==================================================================================================");
+        System.out.println("==================================================================================================");
     }
 
     private void handlePassengerSupport() {
         supportView.handlePassengerSupport(loggedInUser.getId());
     }
+
 }
