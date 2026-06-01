@@ -34,7 +34,7 @@ The application supports:
 
 The project is structured using a decoupled Clean Architecture, separating Data, Business Logic, and UI/Presentation.
 
-## 1. View / Feature Layer (`features/`)
+## 1. View / Feature Layer ( `features/`)
 
 Handles user interactions, console I/O, and feature-specific workflows.
 
