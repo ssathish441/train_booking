@@ -3,7 +3,6 @@ package com.sathish.thodar.features.journeyplanning;
 import java.util.ArrayList;
 import java.util.List;
 
-// public keyword removed. Ithu ippo 'default' (package-private) access-la irukku
 class RouteModel {
     private String sourceCode;
     private String destinationCode;
