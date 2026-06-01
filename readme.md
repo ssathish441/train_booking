@@ -1,4 +1,4 @@
-# Thodar Railways 🚂
+# Thodar Railways 
 
 ## Overview
 
