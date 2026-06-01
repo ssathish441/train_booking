@@ -25,7 +25,7 @@ The application supports:
 * **Architecture Style:** Feature-Based MVC / Clean Architecture
 * **Data Storage:** In-Memory Repository (Singleton Pattern)
 * **Entry Point:** Main.java
-* **Package Root:** com.sathish.thodar
+* **Package Root:** `com.sathish.thodar`
 * **Version:** 5.0.0
 
 ---
@@ -38,32 +38,54 @@ The project is structured using a decoupled Clean Architecture, separating Data,
 
 Handles user interactions, console I/O, and feature-specific workflows.
 
-**Examples:**
+### Examples
 
 * AuthView
 * AdminView
 * PassengerView
+* BookingView
+* RouteView
+* NotificationView
+* ReportView
+* SupportView
+* FileView
+
+---
 
 ## 2. Core Business Logic Layer (`features/core/`)
 
-Acts as the brain of the application, handling complex mathematical calculations independently of the UI.
+Acts as the brain of the application, handling complex railway operations independently of the UI.
 
-**Examples:**
+### Examples
 
-* TrainService (Waitlist Logic, Quota Distribution, Capacity Calculation)
+* TrainService
+
+    * Waitlist Logic
+    * Quota Distribution
+    * Capacity Calculation
+    * Route Validation
+    * Seat Allocation
+
+---
 
 ## 3. DTO Layer (`data/dto/`)
 
 Manages structural entities and transfers data securely between layers to prevent tight coupling.
 
+### Entities
+
+* User
+* Station
+
 ### Enums
 
-* TicketClass
-* TransactionType
-* TicketQuota
 * Role
 * ScheduleStatus
+* TicketClass
+* TicketQuota
 * TicketStatus
+* TransactionStatus
+* TransactionType
 
 ### Requests
 
@@ -76,74 +98,98 @@ Manages structural entities and transfers data securely between layers to preven
 ### Responses
 
 * PassengerListResponse
-* TicketSummaryResponse
 * AuthResponse
 * LiveStatusResponse
+* TicketSummaryResponse
 * Transaction
+
+---
 
 ## 4. Repository Layer (`data/repository/`)
 
 Centralized in-memory persistence using the Singleton pattern.
 
-**Examples:**
+### Examples
 
 * ThodarDB
+* StationMaster
 
 ---
 
 # Project Structure
 
 ```text
-src/
-└── com/sathish/thodar/
-    ├── Main.java
-    ├── data/
-    │   ├── dto/
-    │   │   ├── enums/
+src
+└── com.sathish.thodar
+    ├── data                     # 📦 Core Data & Storage Layer
+    │   ├── dto                  # Data Transfer Objects
+    │   │   ├── entity
+    │   │   │   └── User.java
+    │   │   ├── enums            # System Constants & Statuses
     │   │   │   ├── Role.java
     │   │   │   ├── ScheduleStatus.java
     │   │   │   ├── TicketClass.java
     │   │   │   ├── TicketQuota.java
     │   │   │   ├── TicketStatus.java
+    │   │   │   ├── TransactionStatus.java
     │   │   │   └── TransactionType.java
-    │   │   ├── request/
-    │   │   │   ├── admin/
+    │   │   ├── request          # Incoming Data Models
+    │   │   │   ├── admin
     │   │   │   │   ├── ScheduleRequest.java
     │   │   │   │   └── TrainSetupRequest.java
-    │   │   │   ├── auth/
+    │   │   │   ├── auth
     │   │   │   │   ├── LoginRequest.java
     │   │   │   │   └── RegisterRequest.java
-    │   │   │   └── passenger/
+    │   │   │   └── passenger
     │   │   │       └── BookingRequest.java
-    │   │   └── response/
-    │   │       ├── admin/
+    │   │   └── response         # Outgoing Data Models
+    │   │       ├── admin
     │   │       │   └── PassengerListResponse.java
-    │   │       ├── auth/
+    │   │       ├── auth
     │   │       │   └── AuthResponse.java
-    │   │       └── passenger/
-    │   │           ├── LiveStatusResponse.java
-    │   │           ├── TicketSummaryResponse.java
-    │   │           └── Transaction.java
-    │   └── repository/
+    │   │       ├── passenger
+    │   │       │   ├── LiveStatusResponse.java
+    │   │       │   ├── TicketSummaryResponse.java
+    │   │       │   └── Transaction.java
+    │   │       └── Station.java
+    │   └── repository           # Database / Data Access Layer
+    │       ├── StationMaster.java
     │       └── ThodarDB.java
-    ├── features/
-    │   ├── admin/
+    │
+    ├── features                 # 🚀 Application Modules (Feature-Driven)
+    │   ├── admin
     │   │   └── AdminView.java
-    │   ├── auth/
+    │   ├── auth
     │   │   └── AuthView.java
-    │   ├── core/                  <-- Core Business Logic
+    │   ├── booking
+    │   │   ├── BookingModel.java
+    │   │   └── BookingView.java
+    │   ├── core
     │   │   └── TrainService.java
-    │   ├── passenger/
+    │   ├── filemanagement
+    │   │   ├── FileModel.java
+    │   │   └── FileView.java
+    │   ├── journeyplanning
+    │   │   ├── RouteModel.java
+    │   │   └── RouteView.java
+    │   ├── notification
+    │   │   ├── NotificationModel.java
+    │   │   └── NotificationView.java
+    │   ├── passenger
     │   │   └── PassengerView.java
-    │   ├── reporting/
+    │   ├── reporting
     │   │   ├── ReportModel.java
     │   │   └── ReportView.java
-    │   └── support/
-    │       ├── SupportModel.java
-    │       └── SupportView.java
-    └── util/
-        ├── ConsoleInput.java
-        └── ParseHelper.java
+    │   ├── support
+    │   │   ├── SupportModel.java
+    │   │   └── SupportView.java
+    │   └── package-info.java
+    │
+    ├── util                     # 🛠️ Shared Helpers & Utilities
+    │   ├── ConsoleInput.java
+    │   └── ParseHelper.java
+    │
+    └── Main.java                # 🎯 Application Entry Point
 ```
 
 ---
@@ -192,7 +238,7 @@ Allocated to intermediate stations (~20% capacity).
 
 #### TQWL (Tatkal Waiting List)
 
-Strict 24-hour window, capped at ~30% capacity.
+Strict 24-hour booking window, capped at ~30% capacity.
 
 ### Waitlist Shift Algorithm
 
@@ -222,7 +268,27 @@ Processes immediate cancellations with automated 80% wallet refunds and dynamic 
 
 ---
 
-## 5. Reporting & Support
+## 5. Journey Planning Module
+
+### Route Discovery
+
+Find optimal train routes between source and destination stations.
+
+### Station Management
+
+Manage station connectivity and route mapping.
+
+---
+
+## 6. Notification Module
+
+### Alerts & Updates
+
+Send booking confirmations, cancellations, waitlist updates, and schedule notifications.
+
+---
+
+## 7. Reporting & Support
 
 ### Analytics
 
@@ -238,41 +304,46 @@ Admin tools to inject dummy traffic and simulate bulk cancellations for testing 
 
 ---
 
+## 8. File Management Module
+
+### Data Operations
+
+Import, export, backup, and restore application data and reports.
+
+---
+
 # Data Dictionary
 
 ## Key Entities
 
+### User
+
+Stores user profile, login credentials, role information, and wallet details.
+
+### Station
+
+Represents railway station information and route connectivity.
+
 ### TrainSetupRequest
 
-Defines:
-
-* Train Number
-* Train Name
-* Path Sequence
-* Coach Multipliers
+Defines train number, name, path sequence, and coach multipliers.
 
 ### BookingRequest
 
-Contains:
-
-* PNR
-* User Mapping
-* Schedule Mapping
-* Passenger Lists
-* Quota Parameters
+Contains PNR, user mapping, schedule mapping, passenger lists, and quota parameters.
 
 ### Transaction
 
-Ledger entry detailing:
-
-* TxnID
-* Amount
-* Transaction Type
-* Transaction Status
+Ledger entry detailing TxnID, amounts, types (TransactionType), and statuses.
 
 ---
 
 ## Key Enums
+
+### Role
+
+* ADMIN
+* PASSENGER
 
 ### TicketClass
 
@@ -291,12 +362,24 @@ Ledger entry detailing:
 * CREDIT
 * DEBIT
 
+### TransactionStatus
+
+* SUCCESS
+* FAILED
+* PENDING
+
 ### TicketStatus
 
 * CNF
 * RAC
 * WL
 * CAN
+
+### ScheduleStatus
+
+* ACTIVE
+* CANCELLED
+* COMPLETED
 
 ---
 
@@ -305,7 +388,7 @@ Ledger entry detailing:
 ## Requirements
 
 * Java JDK 8 or Higher
-* Standard Java IDE (IntelliJ IDEA, Eclipse) or Command Line
+* IntelliJ IDEA, Eclipse, VS Code, or Command Line
 
 ## Execution Steps
 
@@ -318,6 +401,8 @@ javac com/sathish/thodar/Main.java
 
 java com.sathish.thodar.Main
 ```
+
+---
 
 ## Default Credentials
 
@@ -352,4 +437,10 @@ Multithreading implementation (e.g., ReentrantLocks) for handling high-volume Ta
 
 Integration with React.js or Angular for a seamless Web UI.
 
+## Cloud Deployment
 
+Deployment using Docker, Kubernetes, and cloud-native infrastructure.
+
+## Mobile Application
+
+Android and iOS applications for railway booking and journey management.
