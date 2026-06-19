@@ -26,7 +26,7 @@ The application supports:
 * **Data Storage:** In-Memory Repository (Singleton Pattern)
 * **Entry Point:** Main.java
 * **Package Root:** `com.sathish.thodar`
-* **Version:** 5.0.0
+* **Version:** 1.0.1
 
 ---
 
