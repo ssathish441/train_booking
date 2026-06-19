@@ -28,6 +28,7 @@ The application supports:
 * **Package Root:** `com.sathish.thodar`
 * **Version:** 1.0.1
 
+
 ---
 
 #  High-Level Architecture
