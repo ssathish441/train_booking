@@ -30,7 +30,7 @@ The application supports:
 
 ---
 
-# High-Level Architecture
+#  High-Level Architecture
 The project is structured using a decoupled Clean Architecture, separating Data, Business Logic, and UI/Presentation.
 
 ## 1. View / Feature Layer ( `features/`)
